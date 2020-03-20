@@ -76,4 +76,27 @@ public class UsersServiceImpl implements UsersService {
 
         return users;
     }
+
+    /**
+     * 用户登录
+     */
+    @Transactional(propagation = Propagation.REQUIRED)
+    @Override
+    public Users queryUserForLogin(UserBO userBO) {
+
+        try {
+            userBO.setPassword(MD5Utils.getMD5Str(userBO.getPassword()));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        Example example = new Example(Users.class);
+        Example.Criteria criteria = example.createCriteria();
+        criteria.andEqualTo("username", userBO.getUsername());
+        criteria.andEqualTo("password", userBO.getPassword());
+
+        Users users = this.usersMapper.selectOneByExample(example);
+
+        return users;
+    }
 }
