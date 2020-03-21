@@ -81,6 +81,9 @@ public class PassportController {
         String userJson = JSON.toJSONString(userRes);
         CookieUtils.setCookie(request, response, "user", userJson, true);
 
+        //TODO 生成用户token存入redis中，而非cookie
+        //TODO 将cookie中的购物车信息存到redis中
+
         return ApiJsonResult.ok();
     }
 
@@ -112,6 +115,9 @@ public class PassportController {
         //存入cookie
         String userJson = JSON.toJSONString(userRes);
         CookieUtils.setCookie(request, response, "user", userJson, true);
+
+        //TODO 生成用户token存入redis中，而非cookie
+        //TODO 将cookie中的购物车信息存到redis中
 
         return ApiJsonResult.ok(userRes);
     }

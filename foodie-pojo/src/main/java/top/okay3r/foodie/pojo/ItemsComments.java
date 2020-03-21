@@ -38,8 +38,8 @@ public class ItemsComments {
     /**
      * 规格名称 可为空
      */
-    @Column(name = "sepc_name")
-    private String sepcName;
+    @Column(name = "spec_name")
+    private String specName;
 
     /**
      * 评价等级 1：好评 2：中评 3：差评
@@ -160,7 +160,7 @@ public class ItemsComments {
      * @return sepc_name - 规格名称 可为空
      */
     public String getSepcName() {
-        return sepcName;
+        return specName;
     }
 
     /**
@@ -169,7 +169,7 @@ public class ItemsComments {
      * @param sepcName 规格名称 可为空
      */
     public void setSepcName(String sepcName) {
-        this.sepcName = sepcName;
+        this.specName = sepcName;
     }
 
     /**
