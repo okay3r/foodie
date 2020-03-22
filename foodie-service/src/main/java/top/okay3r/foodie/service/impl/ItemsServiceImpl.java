@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
 import top.okay3r.foodie.enums.CommentLevel;
+import top.okay3r.foodie.enums.YesOrNo;
 import top.okay3r.foodie.mapper.*;
 import top.okay3r.foodie.pojo.*;
 import top.okay3r.foodie.pojo.vo.CommentLevelCountsVo;
@@ -150,6 +151,32 @@ public class ItemsServiceImpl implements ItemsService {
         Collections.addAll(paramsList, split);
         List<ShopCartVo> shopCartVoList = this.itemsMapperCustom.searchItemsBySpecId(paramsList);
         return shopCartVoList;
+    }
+
+    @Transactional(propagation = Propagation.SUPPORTS)
+    @Override
+    public ItemsSpec queryItemSpecBySpecId(String itemSpecId) {
+        return this.itemsSpecMapper.selectByPrimaryKey(itemSpecId);
+    }
+
+    @Transactional(propagation = Propagation.SUPPORTS)
+    @Override
+    public String queryItemMainImgById(String itemId) {
+        ItemsImg img = new ItemsImg();
+        img.setItemId(itemId);
+        img.setIsMain(YesOrNo.YES.type);
+
+        return this.itemsImgMapper.selectOne(img).getUrl();
+    }
+
+    @Override
+    public void decreaseItemSpecStock(String specId, Integer pendingCounts) {
+        //TODO 分布式锁
+
+        int res = this.itemsMapperCustom.decreaseItemSpecStock(specId, pendingCounts);
+        if (res != 1) {
+            throw new RuntimeException("订单创建失败，原因：库存不足!");
+        }
     }
 
     /**
