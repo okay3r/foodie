@@ -13,13 +13,12 @@ import top.okay3r.foodie.pojo.*;
 import top.okay3r.foodie.pojo.vo.CommentLevelCountsVo;
 import top.okay3r.foodie.pojo.vo.ItemCommentsVo;
 import top.okay3r.foodie.pojo.vo.SearchItemVo;
+import top.okay3r.foodie.pojo.vo.ShopCartVo;
 import top.okay3r.foodie.service.ItemsService;
 import top.okay3r.foodie.utils.DesensitizationUtil;
 import top.okay3r.foodie.utils.PagedGridResult;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class ItemsServiceImpl implements ItemsService {
@@ -93,8 +92,8 @@ public class ItemsServiceImpl implements ItemsService {
         return commentLevelCountsVo;
     }
 
-    @Override
     @Transactional(propagation = Propagation.SUPPORTS)
+    @Override
     public PagedGridResult queryPagedComments(String itemId, Integer level, Integer page, Integer pageSize) {
         Map<String, Object> map = new HashMap<>();
         map.put("itemId", itemId);
@@ -112,6 +111,7 @@ public class ItemsServiceImpl implements ItemsService {
         return pagedGridResult;
     }
 
+    @Transactional(propagation = Propagation.SUPPORTS)
     @Override
     public PagedGridResult searchItems(String keywords, String sort, Integer page, Integer pageSize) {
         Map<String, Object> map = new HashMap<>();
@@ -126,6 +126,7 @@ public class ItemsServiceImpl implements ItemsService {
         return pagedGridResult;
     }
 
+    @Transactional(propagation = Propagation.SUPPORTS)
     @Override
     public PagedGridResult searchItemsByThirdCat(Integer catId, String sort, Integer page, Integer pageSize) {
         Map<String, Object> map = new HashMap<>();
@@ -138,6 +139,17 @@ public class ItemsServiceImpl implements ItemsService {
 
         PagedGridResult pagedGridResult = setPageGrid(page, searchItemVoList);
         return pagedGridResult;
+    }
+
+    @Transactional(propagation = Propagation.SUPPORTS)
+    @Override
+    public List<ShopCartVo> queryItemsBySpecIds(String itemSpecIds) {
+
+        String[] split = itemSpecIds.split(",");
+        List<String> paramsList = new ArrayList<>();
+        Collections.addAll(paramsList, split);
+        List<ShopCartVo> shopCartVoList = this.itemsMapperCustom.searchItemsBySpecId(paramsList);
+        return shopCartVoList;
     }
 
     /**

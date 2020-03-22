@@ -108,4 +108,32 @@
             </otherwise>
         </choose>
     </select>
+
+    <select id="searchItemsBySpecId" parameterType="list" resultType="top.okay3r.foodie.pojo.vo.ShopCartVo">
+        SELECT
+            i.id AS itemId,
+            ii.url AS itemImgUrl,
+            i.item_name AS itemName,
+            isp.id AS specId,
+            isp.`name` AS specName,
+            isp.price_discount AS priceDiscount,
+            isp.price_normal AS priceNormal
+        FROM
+            items i
+        LEFT JOIN
+            items_spec isp
+        ON
+            i.id = isp.item_id
+        LEFT JOIN
+            items_img ii
+        ON
+            i.id = ii.item_id
+        WHERE
+            ii.is_main = 1
+        AND
+            isp.id IN 
+        <foreach collection="paramsList" index="index" item="specId" open="(" separator="," close=")">
+            #{specId}
+        </foreach>
+    </select>
 </mapper>

@@ -5,6 +5,7 @@ import top.okay3r.foodie.pojo.ItemsImg;
 import top.okay3r.foodie.pojo.ItemsParam;
 import top.okay3r.foodie.pojo.ItemsSpec;
 import top.okay3r.foodie.pojo.vo.CommentLevelCountsVo;
+import top.okay3r.foodie.pojo.vo.ShopCartVo;
 import top.okay3r.foodie.utils.PagedGridResult;
 
 import java.util.List;
@@ -26,4 +27,6 @@ public interface ItemsService {
     PagedGridResult searchItems(String keywords, String sort, Integer page, Integer pageSize);
 
     PagedGridResult searchItemsByThirdCat(Integer catId, String sort, Integer page, Integer pageSize);
+
+    List<ShopCartVo> queryItemsBySpecIds(String itemSpecIds);
 }

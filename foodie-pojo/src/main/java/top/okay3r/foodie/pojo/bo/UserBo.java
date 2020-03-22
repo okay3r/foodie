@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 @ApiModel(value = "用户对象BO",description = "客户端传入的数据封装在此entity中")
-public class UserBO {
+public class UserBo {
 
     @ApiModelProperty(value = "用户名", name = "username", example = "mike", required = true)
     private String username;

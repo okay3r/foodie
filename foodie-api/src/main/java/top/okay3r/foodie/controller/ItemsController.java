@@ -3,6 +3,7 @@ package top.okay3r.foodie.controller;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import top.okay3r.foodie.pojo.Items;
@@ -11,6 +12,7 @@ import top.okay3r.foodie.pojo.ItemsParam;
 import top.okay3r.foodie.pojo.ItemsSpec;
 import top.okay3r.foodie.pojo.vo.CommentLevelCountsVo;
 import top.okay3r.foodie.pojo.vo.ItemInfoVo;
+import top.okay3r.foodie.pojo.vo.ShopCartVo;
 import top.okay3r.foodie.service.ItemsService;
 import top.okay3r.foodie.utils.ApiJsonResult;
 import top.okay3r.foodie.utils.PagedGridResult;
@@ -20,7 +22,7 @@ import java.util.List;
 @Api(value = "商品信息", tags = "商品信息相关接口")
 @RestController
 @RequestMapping("/items")
-public class ItemsController extends BaseController{
+public class ItemsController extends BaseController {
 
     @Autowired
     private ItemsService itemsService;
@@ -133,5 +135,22 @@ public class ItemsController extends BaseController{
         PagedGridResult pagedGridResult = this.itemsService.searchItemsByThirdCat(catId, sort, page, pageSize);
         return ApiJsonResult.ok(pagedGridResult);
     }
+
+    /**
+     * 用于用户长时间未登录网站，刷新购物车中的数据（主要是商品价格）
+     */
+    @GetMapping("/refresh")
+    @ApiOperation(value = "根据商品规格ids查找最新的商品数据", notes = "用于用户长时间未登录网站，刷新购物车中的数据（主要是商品价格）", httpMethod = "GET")
+    public ApiJsonResult catItems(
+            @ApiParam(name = "itemSpecIds", value = "拼接的规格ids", required = true, example = "1001,1003,1005")
+            @RequestParam String itemSpecIds
+    ) {
+        if (StringUtils.isBlank(itemSpecIds)) {
+            return ApiJsonResult.errorMsg("");
+        }
+        List<ShopCartVo> shopCartVoList = this.itemsService.queryItemsBySpecIds(itemSpecIds);
+        return ApiJsonResult.ok(shopCartVoList);
+    }
+
 
 }

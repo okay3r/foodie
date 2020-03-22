@@ -1,15 +1,14 @@
-package top.okay3r.foodie.pojo.bo;
+package top.okay3r.foodie.pojo.vo;
 
 import lombok.Data;
 
 @Data
-public class ShopCartBo {
+public class ShopCartVo {
     private String itemId;
     private String itemImgUrl;
     private String itemName;
     private String specId;
     private String specName;
-    private Integer buyCounts;
     private Integer priceDiscount;
     private Integer priceNormal;
 }

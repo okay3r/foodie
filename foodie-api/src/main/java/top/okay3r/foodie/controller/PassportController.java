@@ -7,11 +7,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import top.okay3r.foodie.pojo.Users;
-import top.okay3r.foodie.pojo.bo.UserBO;
+import top.okay3r.foodie.pojo.bo.UserBo;
 import top.okay3r.foodie.service.UsersService;
 import top.okay3r.foodie.utils.ApiJsonResult;
 import top.okay3r.foodie.utils.CookieUtils;
-import top.okay3r.foodie.utils.JsonUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -45,7 +44,7 @@ public class PassportController {
      */
     @ApiOperation(value = "用户注册", notes = "用户注册", httpMethod = "POST")
     @PostMapping("/regist")
-    public ApiJsonResult regist(@RequestBody UserBO userBO,
+    public ApiJsonResult regist(@RequestBody UserBo userBO,
                                 HttpServletRequest request,
                                 HttpServletResponse response) {
 
@@ -92,7 +91,7 @@ public class PassportController {
      */
     @ApiOperation(value = "用户登录", notes = "用户登录", httpMethod = "POST")
     @PostMapping("/login")
-    public ApiJsonResult login(@RequestBody UserBO userBO,
+    public ApiJsonResult login(@RequestBody UserBo userBO,
                                HttpServletRequest request,
                                HttpServletResponse response) {
 

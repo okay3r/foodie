@@ -9,7 +9,7 @@ import tk.mybatis.mapper.entity.Example;
 import top.okay3r.foodie.enums.Sex;
 import top.okay3r.foodie.mapper.UsersMapper;
 import top.okay3r.foodie.pojo.Users;
-import top.okay3r.foodie.pojo.bo.UserBO;
+import top.okay3r.foodie.pojo.bo.UserBo;
 import top.okay3r.foodie.service.UsersService;
 import top.okay3r.foodie.utils.MD5Utils;
 
@@ -47,7 +47,7 @@ public class UsersServiceImpl implements UsersService {
      */
     @Transactional(propagation = Propagation.REQUIRED)
     @Override
-    public Users createUser(UserBO userBO) {
+    public Users createUser(UserBo userBO) {
 
         //生成全局唯一id
         String userId = this.sid.nextShort();
@@ -80,9 +80,9 @@ public class UsersServiceImpl implements UsersService {
     /**
      * 用户登录
      */
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.SUPPORTS)
     @Override
-    public Users queryUserForLogin(UserBO userBO) {
+    public Users queryUserForLogin(UserBo userBO) {
 
         try {
             userBO.setPassword(MD5Utils.getMD5Str(userBO.getPassword()));
