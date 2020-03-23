@@ -5,5 +5,5 @@ import lombok.Data;
 @Data
 public class OrderVo {
     private String orderId;
-    private MerchantOrdersVO merchantOrdersVO;
+    private MerchantOrdersVo merchantOrdersVO;
 }

@@ -12,13 +12,15 @@ import top.okay3r.foodie.mapper.OrderStatusMapper;
 import top.okay3r.foodie.mapper.OrdersMapper;
 import top.okay3r.foodie.pojo.*;
 import top.okay3r.foodie.pojo.bo.SubmitOrderBo;
-import top.okay3r.foodie.pojo.vo.MerchantOrdersVO;
+import top.okay3r.foodie.pojo.vo.MerchantOrdersVo;
 import top.okay3r.foodie.pojo.vo.OrderVo;
 import top.okay3r.foodie.service.AddressService;
 import top.okay3r.foodie.service.ItemsService;
 import top.okay3r.foodie.service.OrderService;
+import top.okay3r.foodie.utils.DateUtil;
 
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -129,7 +131,7 @@ public class OrderServiceImpl implements OrderService {
         this.orderStatusMapper.insert(orderStatus);
 
         //构建支付信息
-        MerchantOrdersVO merchantOrdersVO = new MerchantOrdersVO();
+        MerchantOrdersVo merchantOrdersVO = new MerchantOrdersVo();
         merchantOrdersVO.setMerchantUserId(userId);
         merchantOrdersVO.setMerchantOrderId(orderId);
         merchantOrdersVO.setAmount(realPayAmount + postAmount);
@@ -162,6 +164,21 @@ public class OrderServiceImpl implements OrderService {
     @Transactional(propagation = Propagation.REQUIRED)
     @Override
     public void closeOrder() {
+        OrderStatus orderStatus = new OrderStatus();
+        orderStatus.setOrderStatus(OrderStatusEnum.WAIT_PAY.type);
+        List<OrderStatus> orderStatusList = this.orderStatusMapper.select(orderStatus);
+        for (OrderStatus os : orderStatusList) {
+            int days = DateUtil.daysBetween(os.getCreatedTime(), new Date());
+            if (days >= 1) {
+                //不要在同一个事务中进行,否则一个失败将全部回滚
+                doCloseOrder(os);
+            }
+        }
+    }
 
+    @Transactional(propagation = Propagation.REQUIRED)
+    public void doCloseOrder(OrderStatus os) {
+        os.setOrderStatus(OrderStatusEnum.CLOSE.type);
+        this.orderStatusMapper.updateByPrimaryKeySelective(os);
     }
 }

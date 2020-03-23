@@ -3,7 +3,7 @@ package top.okay3r.foodie.pojo.vo;
 import lombok.Data;
 
 @Data
-public class MerchantOrdersVO {
+public class MerchantOrdersVo {
 
     private String merchantOrderId;         // 商户订单号
     private String merchantUserId;          // 商户方的发起用户的用户主键id

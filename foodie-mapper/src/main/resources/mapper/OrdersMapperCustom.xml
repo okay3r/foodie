@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="top.okay3r.foodie.mapper.OrdersMapperCustom" >
+    
+    <resultMap id="myOrdersVo" type="top.okay3r.foodie.pojo.vo.MyOrdersVo">
+        <id property="orderId" column="orderId"/>
+        <result property="createdTime" column="createdTime"/>
+        <result property="payMethod" column="payMethod"/>
+        <result property="realPayAmount" column="realPayAmount"/>
+        <result property="postAmount" column="postAmount"/>
+        <result property="isComment" column="isComment"/>
+        <result property="orderStatus" column="orderStatus"/>
+        <collection property="subOrderItemList" ofType="top.okay3r.foodie.pojo.vo.MySubOrderItemVo">
+            <id property="itemId" column="itemId"/>
+            <result property="itemImg" column="itemImg"/>
+            <result property="itemName" column="itemName"/>
+            <result property="itemSpecName" column="itemSpecName"/>
+            <result property="buyCounts" column="buyCounts"/>
+            <result property="price" column="price"/>
+        </collection>
+    </resultMap>
+
+    <select id="queryMyOrders" parameterType="map" resultMap="myOrdersVo">
+        SELECT
+            o.id AS orderId,
+            o.created_time AS createdTime,
+            o.pay_method AS payMethod,
+            o.real_pay_amount AS realPayAmount,
+            o.post_amount AS postAmount,
+            o.is_comment AS isComment,
+            os.order_status AS orderStatus,
+            oi.item_id AS itemId,
+            oi.item_img AS itemImg,
+            oi.item_name AS itemName,
+            oi.item_spec_name AS itemSpecName,
+            oi.buy_counts AS buyCounts,
+            oi.price AS price
+        FROM
+            orders o
+        LEFT JOIN
+            order_items oi
+        ON
+            o.id = oi.order_id
+        LEFT JOIN
+            order_status os
+        ON
+            o.id = os.order_id
+        WHERE
+            o.user_id = #{paramsMap.userId}
+        AND
+            o.is_delete = 0
+        <if test=" paramsMap.orderStatus != null ">
+            AND os.order_status = #{paramsMap.orderStatus}
+        </if>
+        ORDER BY
+            o.updated_time ASC
+    </select>
+</mapper>

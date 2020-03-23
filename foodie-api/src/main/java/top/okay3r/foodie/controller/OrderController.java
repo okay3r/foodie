@@ -13,7 +13,7 @@ import top.okay3r.foodie.enums.OrderStatusEnum;
 import top.okay3r.foodie.enums.PayMethod;
 import top.okay3r.foodie.pojo.OrderStatus;
 import top.okay3r.foodie.pojo.bo.SubmitOrderBo;
-import top.okay3r.foodie.pojo.vo.MerchantOrdersVO;
+import top.okay3r.foodie.pojo.vo.MerchantOrdersVo;
 import top.okay3r.foodie.pojo.vo.OrderVo;
 import top.okay3r.foodie.service.OrderService;
 import top.okay3r.foodie.utils.ApiJsonResult;
@@ -50,7 +50,7 @@ public class OrderController extends BaseController {
 
         System.out.println(submitOrderBo);
         OrderVo orderVo = this.orderService.createOrder(submitOrderBo);
-        MerchantOrdersVO merchantOrdersVO = orderVo.getMerchantOrdersVO();
+        MerchantOrdersVo merchantOrdersVO = orderVo.getMerchantOrdersVO();
         merchantOrdersVO.setReturnUrl(PAY_RETURN_URL);
         //设置为一分钱
         merchantOrdersVO.setAmount(1);
@@ -60,7 +60,7 @@ public class OrderController extends BaseController {
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
         httpHeaders.add("imoocUserId", "imooc");
         httpHeaders.add("password", "imooc");
-        HttpEntity<MerchantOrdersVO> entity = new HttpEntity<>(merchantOrdersVO, httpHeaders);
+        HttpEntity<MerchantOrdersVo> entity = new HttpEntity<>(merchantOrdersVO, httpHeaders);
         ResponseEntity<ApiJsonResult> responseEntity = restTemplate.postForEntity(PAYMENT_URL, entity, ApiJsonResult.class);
 
         ApiJsonResult paymentResult = responseEntity.getBody();
