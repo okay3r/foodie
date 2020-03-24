@@ -22,7 +22,7 @@ import top.okay3r.foodie.utils.PagedGridResult;
 import java.util.*;
 
 @Service
-public class ItemsServiceImpl implements ItemsService {
+public class ItemsServiceImpl extends BaseService implements ItemsService {
 
     @Autowired
     private ItemsMapper itemsMapper;
@@ -177,20 +177,6 @@ public class ItemsServiceImpl implements ItemsService {
         if (res != 1) {
             throw new RuntimeException("订单创建失败，原因：库存不足!");
         }
-    }
-
-    /**
-     * 设置分页
-     */
-    @Transactional(propagation = Propagation.SUPPORTS)
-    PagedGridResult setPageGrid(Integer page, List<?> list) {
-        PagedGridResult pagedGridResult = new PagedGridResult();
-        PageInfo pageInfo = new PageInfo(list);
-        pagedGridResult.setPage(page);
-        pagedGridResult.setRows(list);
-        pagedGridResult.setTotal(pageInfo.getPages());
-        pagedGridResult.setRecords(pageInfo.getTotal());
-        return pagedGridResult;
     }
 
     /**

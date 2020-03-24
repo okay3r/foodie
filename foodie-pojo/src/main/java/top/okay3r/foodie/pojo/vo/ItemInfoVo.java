@@ -1,7 +1,6 @@
 package top.okay3r.foodie.pojo.vo;
 
 import lombok.Data;
-import sun.tools.jstat.Literal;
 import top.okay3r.foodie.pojo.Items;
 import top.okay3r.foodie.pojo.ItemsImg;
 import top.okay3r.foodie.pojo.ItemsParam;

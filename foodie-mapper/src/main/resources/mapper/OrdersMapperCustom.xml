@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="top.okay3r.foodie.mapper.OrdersMapperCustom" >
-    
+<mapper namespace="top.okay3r.foodie.mapper.OrdersMapperCustom">
+
     <resultMap id="myOrdersVo" type="top.okay3r.foodie.pojo.vo.MyOrdersVo">
         <id property="orderId" column="orderId"/>
         <result property="createdTime" column="createdTime"/>
@@ -10,7 +10,10 @@
         <result property="postAmount" column="postAmount"/>
         <result property="isComment" column="isComment"/>
         <result property="orderStatus" column="orderStatus"/>
-        <collection property="subOrderItemList" ofType="top.okay3r.foodie.pojo.vo.MySubOrderItemVo">
+        <collection property="subOrderItemList"
+                    select="getSubItems"
+                    column="orderId"
+                    ofType="top.okay3r.foodie.pojo.vo.MySubOrderItemVo">
             <id property="itemId" column="itemId"/>
             <result property="itemImg" column="itemImg"/>
             <result property="itemName" column="itemName"/>
@@ -20,39 +23,129 @@
         </collection>
     </resultMap>
 
-    <select id="queryMyOrders" parameterType="map" resultMap="myOrdersVo">
+    <select id="queryMyOrders" resultMap="myOrdersVo" parameterType="Map">
         SELECT
-            o.id AS orderId,
-            o.created_time AS createdTime,
-            o.pay_method AS payMethod,
-            o.real_pay_amount AS realPayAmount,
-            o.post_amount AS postAmount,
-            o.is_comment AS isComment,
-            os.order_status AS orderStatus,
-            oi.item_id AS itemId,
-            oi.item_img AS itemImg,
-            oi.item_name AS itemName,
-            oi.item_spec_name AS itemSpecName,
-            oi.buy_counts AS buyCounts,
-            oi.price AS price
+        od.id as orderId,
+        od.created_time as createdTime,
+        od.pay_method as payMethod,
+        od.real_pay_amount as realPayAmount,
+        od.post_amount as postAmount,
+        os.order_status as orderStatus,
+        od.is_comment as isComment
         FROM
-            orders o
+        orders od
         LEFT JOIN
-            order_items oi
+        order_status os
+        on od.id = os.order_id
+        WHERE
+        od.user_id = #{paramsMap.userId}
+        AND
+        od.is_delete = 0
+        <if test="paramsMap.orderStatus != null">
+            and os.order_status = #{paramsMap.orderStatus}
+        </if>
+        ORDER BY
+        od.updated_time ASC
+    </select>
+
+
+    <select id="getSubItems" parameterType="String" resultType="top.okay3r.foodie.pojo.vo.MySubOrderItemVo">
+
+      select
+        oi.item_id as itemId,
+        oi.item_name as itemName,
+        oi.item_img as itemImg,
+        oi.item_spec_name as itemSpecName,
+        oi.buy_counts as buyCounts,
+        oi.price as price
+      from
+        order_items oi
+      where
+        oi.order_id = #{orderId}
+
+    </select>
+
+    <select id="queryMyOrdersDoNotUse" parameterType="map" resultMap="myOrdersVo">
+        SELECT
+        o.id AS orderId,
+        o.created_time AS createdTime,
+        o.pay_method AS payMethod,
+        o.real_pay_amount AS realPayAmount,
+        o.post_amount AS postAmount,
+        o.is_comment AS isComment,
+        os.order_status AS orderStatus,
+        oi.item_id AS itemId,
+        oi.item_img AS itemImg,
+        oi.item_name AS itemName,
+        oi.item_spec_name AS itemSpecName,
+        oi.buy_counts AS buyCounts,
+        oi.price AS price
+        FROM
+        orders o
+        LEFT JOIN
+        order_items oi
         ON
-            o.id = oi.order_id
+        o.id = oi.order_id
         LEFT JOIN
+        order_status os
+        ON
+        o.id = os.order_id
+        WHERE
+        o.user_id = #{paramsMap.userId}
+        AND
+        o.is_delete = 0
+        <if test=" paramsMap.orderStatus != null ">
+            AND os.order_status = #{paramsMap.orderStatus}
+        </if>
+        ORDER BY
+        o.updated_time ASC
+    </select>
+
+    <select id="getMyOrderStatusCounts" resultType="java.lang.Integer" parameterType="map">
+
+        SELECT
+            COUNT(1)
+        FROM
             order_status os
+        LEFT JOIN
+            orders o
         ON
             o.id = os.order_id
         WHERE
             o.user_id = #{paramsMap.userId}
         AND
-            o.is_delete = 0
-        <if test=" paramsMap.orderStatus != null ">
-            AND os.order_status = #{paramsMap.orderStatus}
+            os.order_status = #{paramsMap.orderStatus}
+        <if test=" paramsMap.isComment !=null ">
+            AND o.is_comment = #{paramsMap.isComment}
         </if>
+
+    </select>
+
+    <select id="getMyOrderTrend" parameterType="Map" resultType="top.okay3r.foodie.pojo.OrderStatus">
+
+        SELECT
+            os.order_id as orderId,
+            os.order_status as orderStatus,
+            os.created_time as createdTime,
+            os.pay_time as payTime,
+            os.deliver_time as deliverTime,
+            os.success_time as successTime,
+            os.close_time as closeTime,
+            os.comment_time as commentTime
+        FROM
+          orders o
+        LEFT JOIN
+          order_status os
+        on
+          o.id = os.order_id
+        WHERE
+          o.is_delete = 0
+        AND
+          o.user_id = #{paramsMap.userId}
+        AND
+          os.order_status in (20, 30, 40)
         ORDER BY
-            o.updated_time ASC
+          os.order_id
+        DESC
     </select>
 </mapper>

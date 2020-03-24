@@ -25,6 +25,7 @@ public class ShopCartController {
             return ApiJsonResult.errorMsg("");
         }
 
+
         System.out.println(shopCartBo);
         //TODO 用户登录时，将购物车中的数据添加在redis中
 

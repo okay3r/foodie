@@ -6,7 +6,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 
 @Component
-@PropertySource("classpath:fileUpload.properties")
+@PropertySource("classpath:fileUpload-prod.properties")
 @ConfigurationProperties(prefix = "file")
 @Data
 public class FileUpload {
