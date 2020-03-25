@@ -1,6 +1,6 @@
 # 开发环境
 server:
-  port: 80
+  port: 8088
 
 spring:
   datasource:
