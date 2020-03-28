@@ -12,10 +12,11 @@ public class BaseController {
     public static final String FOODIE_SHOPCART = "shopcart";
 
     //支付成功回调地址
-    public static final String PAY_RETURN_URL = "http://localhost:8088/orders/notifyMerchantOrderPaid";
+    // public static final String PAY_RETURN_URL = "http://api.foodie.com/foodie-api/orders/notifyMerchantOrderPaid";
+    public static final String PAY_RETURN_URL = "http://api.okay3r.top/foodie-api/orders/notifyMerchantOrderPaid";
 
     //支付中心地址
-    public static final String PAYMENT_URL = "http://47.93.10.179:8089/iot-payment/payment/createMerchantOrder";
+    public static final String PAYMENT_URL = "http://payment.t.mukewang.com/foodie-payment/payment/createMerchantOrder";
 
     @Autowired
     private MyOrdersService myOrdersService;

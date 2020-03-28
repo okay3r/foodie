@@ -19,11 +19,12 @@ public class CorsConfig {
     public CorsFilter corsFilter() {
         // 1. 添加cors配置信息
         CorsConfiguration config = new CorsConfiguration();
-        config.addAllowedOrigin("http://localhost:8180");
-        config.addAllowedOrigin("http://shop.okay3r.top:8180");
-        config.addAllowedOrigin("http://center.okay3r.top:8180");
-        config.addAllowedOrigin("http://shop.okay3r.top");
-        config.addAllowedOrigin("http://center.okay3r.top");
+        config.addAllowedOrigin("http://localhost:8912");
+        config.addAllowedOrigin("http://shop.foodie.com");
+        config.addAllowedOrigin("http://center.foodie.com");
+        config.addAllowedOrigin("http://api.foodie.com");
+        // config.addAllowedOrigin("http://shop.okay3r.top");
+        // config.addAllowedOrigin("http://center.okay3r.top");
         config.addAllowedOrigin("*");
 
         config.addAllowedOrigin("*");

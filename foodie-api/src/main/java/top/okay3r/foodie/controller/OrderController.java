@@ -85,7 +85,7 @@ public class OrderController extends BaseController {
     }
 
     /**
-     * 更新订单状态
+     * 查询支付状态
      */
     @PostMapping("/getPaidOrderInfo")
     @ApiOperation(value = "查询支付状态", notes = "查询支付状态", httpMethod = "POST")
