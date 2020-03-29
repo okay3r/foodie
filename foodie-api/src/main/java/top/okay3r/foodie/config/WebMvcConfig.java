@@ -25,7 +25,8 @@ public class WebMvcConfig implements WebMvcConfigurer {
                 // 映射swagger2
                 .addResourceLocations("classpath:/META-INF/resources/")
                 // 映射本地静态资源 此处=imageServerUrl
-                .addResourceLocations("file:/home/job/workfiles/images/");
+                // .addResourceLocations("file:/home/job/workfiles/images/");
+                .addResourceLocations("file:/Users/okay3r/Documents/workSpace/JavaProject/imooc/images/");
     }
 
 }

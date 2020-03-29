@@ -11,6 +11,7 @@ import top.okay3r.foodie.mapper.OrderItemsMapper;
 import top.okay3r.foodie.mapper.OrderStatusMapper;
 import top.okay3r.foodie.mapper.OrdersMapper;
 import top.okay3r.foodie.pojo.*;
+import top.okay3r.foodie.pojo.bo.ShopCartBo;
 import top.okay3r.foodie.pojo.bo.SubmitOrderBo;
 import top.okay3r.foodie.pojo.vo.MerchantOrdersVo;
 import top.okay3r.foodie.pojo.vo.OrderVo;
@@ -19,6 +20,7 @@ import top.okay3r.foodie.service.ItemsService;
 import top.okay3r.foodie.service.OrderService;
 import top.okay3r.foodie.utils.DateUtil;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -46,7 +48,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Transactional(propagation = Propagation.REQUIRED)
     @Override
-    public OrderVo createOrder(SubmitOrderBo submitOrderBo) {
+    public OrderVo createOrder(SubmitOrderBo submitOrderBo, List<ShopCartBo> shopCartList) {
         String userId = submitOrderBo.getUserId();
         String addressId = submitOrderBo.getAddressId();
         String itemSpecIds = submitOrderBo.getItemSpecIds();
@@ -77,10 +79,14 @@ public class OrderServiceImpl implements OrderService {
         Integer realPayAmount = 0;
 
         String[] itemSpecIdArr = itemSpecIds.split(",");
-
+        List<ShopCartBo> toRemoveShopCartBoList = new ArrayList<>();
         //循环设置每个商品订单
         for (String itemSpecId : itemSpecIdArr) {
-            int buyCounts = 1;
+
+            ShopCartBo shopCart = getShopCart(shopCartList, itemSpecId);
+            toRemoveShopCartBoList.add(shopCart);
+
+            int buyCounts = shopCart.getBuyCounts();
             ItemsSpec itemsSpec = this.itemsService.queryItemSpecBySpecId(itemSpecId);
             totalAmount += itemsSpec.getPriceNormal() * buyCounts;
             realPayAmount += itemsSpec.getPriceDiscount() * buyCounts;
@@ -140,8 +146,18 @@ public class OrderServiceImpl implements OrderService {
         OrderVo orderVo = new OrderVo();
         orderVo.setOrderId(orderId);
         orderVo.setMerchantOrdersVO(merchantOrdersVO);
+        orderVo.setToRemoveShopCartBoList(toRemoveShopCartBoList);
 
         return orderVo;
+    }
+
+    private ShopCartBo getShopCart(List<ShopCartBo> shopCartList, String itemSpecId) {
+        for (ShopCartBo shopCartBo : shopCartList) {
+            if (itemSpecId.equals(shopCartBo.getSpecId())) {
+                return shopCartBo;
+            }
+        }
+        return null;
     }
 
     @Override

@@ -7,21 +7,28 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import top.okay3r.foodie.pojo.Users;
+import top.okay3r.foodie.pojo.bo.ShopCartBo;
 import top.okay3r.foodie.pojo.bo.UserBo;
 import top.okay3r.foodie.service.UsersService;
 import top.okay3r.foodie.utils.ApiJsonResult;
 import top.okay3r.foodie.utils.CookieUtils;
+import top.okay3r.foodie.utils.RedisOperator;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.List;
 
 @Api(value = "注册登录", tags = "用于注册登录的相关接口")
 @RestController
 @RequestMapping("/passport")
-public class PassportController {
+public class PassportController extends BaseController {
 
     @Autowired
     private UsersService usersService;
+
+    @Autowired
+    private RedisOperator redisOperator;
 
     /**
      * 检验用户名是否存在
@@ -80,8 +87,7 @@ public class PassportController {
         String userJson = JSON.toJSONString(userRes);
         CookieUtils.setCookie(request, response, "user", userJson, true);
 
-        //TODO 生成用户token存入redis中，而非cookie
-        //TODO 将cookie中的购物车信息存到redis中
+        syncShopCartData(request, response, userRes.getId());
 
         return ApiJsonResult.ok();
     }
@@ -115,8 +121,7 @@ public class PassportController {
         String userJson = JSON.toJSONString(userRes);
         CookieUtils.setCookie(request, response, "user", userJson, true);
 
-        //TODO 生成用户token存入redis中，而非cookie
-        //TODO 将cookie中的购物车信息存到redis中
+        syncShopCartData(request, response, userRes.getId());
 
         return ApiJsonResult.ok(userRes);
     }
@@ -141,5 +146,53 @@ public class PassportController {
         userRes.setCreatedTime(null);
         userRes.setUpdatedTime(null);
         userRes.setBirthday(null);
+    }
+
+    private void syncShopCartData(HttpServletRequest request, HttpServletResponse response, String userId) {
+
+        String cookieShopCartJson = CookieUtils.getCookieValue(request, FOODIE_SHOPCART, true);
+        String redisShopCartJson = (String) this.redisOperator.get(FOODIE_SHOPCART + ":" + userId);
+
+        //如果都为空，则返回
+        if (StringUtils.isBlank(cookieShopCartJson) && StringUtils.isBlank(redisShopCartJson)) {
+            return;
+        }
+
+        //redis为空，cookie不为空
+        if (StringUtils.isBlank(redisShopCartJson)) {
+            this.redisOperator.set(FOODIE_SHOPCART + ":" + userId, cookieShopCartJson);
+            return;
+        }
+
+        //cookie为空，redis不为空
+        if (StringUtils.isBlank(cookieShopCartJson)) {
+            CookieUtils.setCookie(request, response, FOODIE_SHOPCART, redisShopCartJson, true);
+            return;
+        }
+
+        //两者都不为空，合并,如果有重复的则将cookie中的购买数量覆盖redis
+        List<ShopCartBo> cookieShopCartList = JSON.parseArray(cookieShopCartJson, ShopCartBo.class);
+        List<ShopCartBo> redisShopCartList = JSON.parseArray(redisShopCartJson, ShopCartBo.class);
+        List<ShopCartBo> pendingRemoveList = new ArrayList<>();
+        for (ShopCartBo redisShopCart : redisShopCartList) {
+            String redisShopCartSpecId = redisShopCart.getSpecId();
+            for (ShopCartBo cookieShopCart : cookieShopCartList) {
+                if (redisShopCartSpecId.equals(cookieShopCart.getSpecId())) {
+                    //如果有重复的则将cookie中的购买数量覆盖redis
+                    redisShopCart.setBuyCounts(cookieShopCart.getBuyCounts());
+                    //将重复的元素添加到待删除的集合中
+                    pendingRemoveList.add(cookieShopCart);
+                }
+            }
+        }
+        //删除重复元素
+        cookieShopCartList.removeAll(pendingRemoveList);
+        //合并两个list
+        redisShopCartList.addAll(cookieShopCartList);
+
+        String shopcartJson = JSON.toJSONString(redisShopCartList);
+
+        CookieUtils.setCookie(request, response, FOODIE_SHOPCART, shopcartJson, true);
+        this.redisOperator.set(FOODIE_SHOPCART + ":" + userId, shopcartJson);
     }
 }

@@ -13,7 +13,8 @@ public class BaseController {
 
     //支付成功回调地址
     // public static final String PAY_RETURN_URL = "http://api.foodie.com/foodie-api/orders/notifyMerchantOrderPaid";
-    public static final String PAY_RETURN_URL = "http://api.okay3r.top/foodie-api/orders/notifyMerchantOrderPaid";
+    // public static final String PAY_RETURN_URL = "http://api.okay3r.top/foodie-api/orders/notifyMerchantOrderPaid";
+    public static final String PAY_RETURN_URL = "http://127.0.0.1:8088/orders/notifyMerchantOrderPaid";
 
     //支付中心地址
     public static final String PAYMENT_URL = "http://payment.t.mukewang.com/foodie-payment/payment/createMerchantOrder";
